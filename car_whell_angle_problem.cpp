@@ -1,6 +1,7 @@
 #include <iostream>
 #include <cmath>
 #include <string>
+#include <limits>
 
 void count_radius(double& front_left_rad, double& rear_left_rad, double& front_right_rad, double& rear_right_rad, 
                   double angle, double width, double length, std::string direction) {
@@ -28,66 +29,37 @@ void count_radius(double& front_left_rad, double& rear_left_rad, double& front_r
     std::cout << "Rear right wheel radius: " << rear_right_rad << "\n";
 }
 
+template <typename T>
+T get_valid_input(const std::string& prompt, T min_val, T max_val) {
+    T value;
+    while (true) {
+        std::cout << prompt;
+        std::cin >> value;
+
+        if (std::cin.fail() || value <= min_val || value > max_val) {
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            std::cerr << "Error: Invalid input. Please enter a valid number (" << min_val << "-" << max_val << ").\n";
+        }
+        else {
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            break;
+        }
+    }
+
+    return value;
+}
+
 int main() {
-    double angle = 0, width = 0, length = 0;
+    double angle = get_valid_input("Enter steering wheel angle (degrees): ", 0, 45);
+    double width = get_valid_input("Enter car width: ", 0.5, 10.1);
+    double length = get_valid_input("Enter distance between wheels (length of car): ", 1.34, 21.1);
+    
     std::string direction;
-
-    while (true) {
-        std::cout << "Enter steering wheel angle (degrees): ";
-        std::cin >> angle;
-        if (std::cin.fail()) {
-            std::cin.clear();
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-            std::cerr << "Error: Invalid input. Please enter a number.\n";
-            continue;
-        }
-        if (angle < 1 || angle > 90) {
-            std::cerr << "Error: Steering wheel angle must be between 1 and 90 degrees.\n";
-            continue;
-        }
-        break;
-    }
-
-    while (true) {
-        std::cout << "Enter car width: ";
-        std::cin >> width;
-        if (std::cin.fail()) {
-            std::cin.clear();
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-            std::cerr << "Error: Invalid input. Please enter a number.\n";
-            continue;
-        }
-        if (width <= 0) {
-            std::cerr << "Error: Car width must be positive.\n";
-            continue;
-        }
-        break;
-    }
-
-    while (true) {
-        std::cout << "Enter distance between wheels (length of car): ";
-        std::cin >> length;
-        if (std::cin.fail()) {
-            std::cin.clear();
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-            std::cerr << "Error: Invalid input. Please enter a number.\n";
-            continue;
-        }
-        if (length <= 0) {
-            std::cerr << "Error: Car length must be positive.\n";
-            continue;
-        }
-        if (width > length) {
-            std::cerr << "Error: Car width cannot be greater than car length.\n";
-            continue;
-        }
-        break;
-    }
-
     while (true) {
         std::cout << "Enter turn direction ('r' for right, 'l' for left): ";
         std::cin >> direction;
-        if (direction != "r" && direction != "l" && direction != "R" && direction != "L" && direction.size() != 1) {
+        if (direction != "r" && direction != "l" && direction != "R" && direction != "L") {
             std::cerr << "Error: Invalid direction. Use 'r' or 'l'.\n";
             continue;
         }
